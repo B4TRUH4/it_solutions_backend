@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  server:
+    restart: unless-stopped
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile
+    depends_on:
+      - db
+    command: >
+      sh -c "
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:8000
+      "
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/server
+    environment:
+      DEBUG: 'True'
+    env_file:
+      - .env
+
+  db:
+    restart: unless-stopped
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pg-data:/var/lib/postgresql/data
+    env_file:
+      - .env

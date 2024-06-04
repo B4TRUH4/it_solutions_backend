@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+  server:
+    restart: unless-stopped
+    build:
+      context: ./server
+      dockerfile: ./Dockerfile
+    command: sh -c "python manage.py migrate && gunicorn config.wsgi -c ./config/gunicorn.py"
+    depends_on:
+      - db
+    volumes:
+      - static:/server/static
+    environment:
+      DEBUG: 'False'
+      SECRET_KEY: ${SECRET_KEY}'
+      DATABASE_URL: ${DATABASE_URL}
+
+  db:
+    restart: unless-stopped
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  nginx:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    depends_on:
+      - server
+    ports:
+      - "80:80"
+    volumes:
+      - static:/nginx/static
+volumes:
+  pgdata:
+  static:
