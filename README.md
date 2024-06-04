@@ -25,7 +25,7 @@
 1. **Клонируйте репозиторий:**
 
     ```bash
-    git clone https://gitlab.com/B4TRUH4/it_solutions_backend
+    git clone https://github.com/B4TRUH4/it_solutions_backend
     cd it_solutions_backend
     ```
 
